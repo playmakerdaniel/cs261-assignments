@@ -1,2 +1,2 @@
-# cs291-assignments
-Assignments for my CS 291 course at Oregon State
+# cs261-assignments
+Assignments for my CS 261 course at Oregon State
