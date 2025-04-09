@@ -1,5 +1,5 @@
 # Please enter your name, favorite color, favorite hobby, and hometown in the list
-my_list = ['', '', '', '']
+my_list = ['Daniel', 'Blue', 'Fishing', 'Clovis']
 
 def my_info(my_list):
     """ A function that passes a list of my information """
