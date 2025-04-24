@@ -1,9 +1,14 @@
-# Name:
-# OSU Email:
-# Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Name: Daniel D. Burrows
+# OSU Email: burrdani@oregonstate.edu
+# Course: CS261 - Data Structures (400)
+# Assignment 1: Python Fundamentals Review
+# Due Date: 4/18/2025
+# Description: There are 10 separate problems in this assignment. For each problem, you will write a
+# Python function according to the provided specifications. The skeleton code and some basic
+# test cases for each problem are provided in the file assignment1.py
+# Most problems will take as input (and sometimes return as output) an object of the
+# StaticArray class. The StaticArray class has been pre-written for you, and is located in the
+# file static_array.py
 
 
 import random
@@ -14,40 +19,93 @@ from static_array import *
 
 
 def min_max(arr: StaticArray) -> tuple[int, int]:
-    """
-    TODO: Write this implementation
-    """
-    pass
+    """ We want our function to return a tuple that contains the minimum and maximum in the StaticArray. """
 
+    #If our array is empty, we raise an error. Useful for debugging.
+    if arr.length()== 0:
+        raise ValueError("Static Array is empty")
+
+    #Initialize min_val and max_val with the first element of the array
+    min_val = arr.get(0)
+    max_val = arr.get(0)
+
+
+    #Loop through the rest of the array starting at index i
+    for i in range(1, arr.length()):
+        value = arr.get(i)
+        if value < min_val:
+            min_val = value
+        elif value > max_val:
+            max_val = value
+    return min_val, max_val
 
 # ------------------- PROBLEM 2 - FIZZ_BUZZ ---------------------------------
 
 
 def fizz_buzz(arr: StaticArray) -> StaticArray:
+    """ We will return a new Static Array where:
+        multiples of 3 are replace with "fizz",
+        multiples of 5 are placed with "buzz",
+        and multiples of 3 and 5 (15) are replaced with "fizzbuzz".
     """
-    TODO: Write this implementation
-    """
-    pass
+    # We will create a new array with the same length
+    result = StaticArray(arr.length())
 
+    # Now we loop through the original array
+    for i in range(arr.length()):
+        val = arr.get(i)
+
+    # We will now check for divisibility of 15 first to avoid any overlap
+        if val % 15 == 0:
+            result.set(i, "fizzbuzz")
+        elif val % 3 == 0:
+            result.set(i, "fizz")
+        elif val % 5 == 0:
+            result.set(i, "buzz")
+        else:
+            result.set(i, val)
+
+    return result
 
 # ------------------- PROBLEM 3 - REVERSE -----------------------------------
 
 
 def reverse(arr: StaticArray) -> None:
     """
-    TODO: Write this implementation
+    Reverses the elements of the StaticArray in-place.
     """
-    pass
+    left = 0
+    right = arr.length() - 1
 
+    while left < right:
+        # Swap values at left and right
+        temp = arr.get(left)
+        arr.set(left, arr.get(right))
+        arr.set(right, temp)
+
+        left += 1
+        right -= 1
 
 # ------------------- PROBLEM 4 - ROTATE ------------------------------------
 
 
 def rotate(arr: StaticArray, steps: int) -> StaticArray:
     """
-    TODO: Write this implementation
+    Returns a new StaticArray with elements rotated by 'steps'.
+    Positive steps rotate right, negative steps rotate left.
     """
-    pass
+    length = arr.length()
+    result = StaticArray(length)
+
+    # Normalize steps to be within array bounds
+    steps = steps % length
+
+    for i in range(length):
+        # Compute new index after rotation
+        new_index = (i + steps) % length
+        result.set(new_index, arr.get(i))
+
+    return result
 
 
 # ------------------- PROBLEM 5 - SA_RANGE ----------------------------------
@@ -55,9 +113,22 @@ def rotate(arr: StaticArray, steps: int) -> StaticArray:
 
 def sa_range(start: int, end: int) -> StaticArray:
     """
-    TODO: Write this implementation
+    Returns a StaticArray containing all integers from start to end inclusively.
     """
-    pass
+    # Calculate how many elements are needed
+    size = abs(end - start) + 1
+
+    # Create a new StaticArray of the required size
+    result = StaticArray(size)
+
+    # Determine direction of the range (increasing or decreasing)
+    step = 1 if start <= end else -1
+
+    # Populate the array with values from start to end
+    for i in range(size):
+        result.set(i, start + i * step)
+
+    return result
 
 
 # ------------------- PROBLEM 6 - IS_SORTED ---------------------------------
@@ -65,19 +136,77 @@ def sa_range(start: int, end: int) -> StaticArray:
 
 def is_sorted(arr: StaticArray) -> int:
     """
-    TODO: Write this implementation
+    Determines if a StaticArray is sorted.
+    Returns:1 if sorted in ascending order, -1 if sorted in descending order, and 0 if not sorted
     """
-    pass
 
+    if arr.length() <= 1:
+        return 1
+
+    # Track whether the array remains strictly ascending or descending
+    ascending = True
+    descending = True
+
+    # Compare each adjacent pair of values
+    for i in range(1, arr.length()):
+        prev = arr.get(i - 1)
+        curr = arr.get(i)
+
+        # If current value is less than or equal to previous, not strictly ascending
+        if curr <= prev:
+            ascending = False
+
+        # If current value is greater than or equal to previous, not strictly descending
+        if curr >= prev:
+            descending = False
+
+    # Return based on the final direction of the array
+    if ascending:
+        return 1
+
+    if descending:
+        return -1
+
+    return 0
 
 # ------------------- PROBLEM 7 - FIND_MODE -----------------------------------
 
 
 def find_mode(arr: StaticArray) -> tuple[object, int]:
     """
-    TODO: Write this implementation
+    Finds the mode (most frequent value) in a sorted StaticArray.
+    Returns a tuple of the value and its frequency.
     """
-    pass
+    if arr.length() == 0:
+        raise ValueError("Array is empty")
+
+    mode_value = arr.get(0)
+    mode_count = 1
+    current_value = arr.get(0)
+    current_count = 1
+
+    for i in range(1, arr.length()):
+        val = arr.get(i)
+
+        # If same as previous, increment current count
+        if val == current_value:
+            current_count += 1
+        else:
+            # New value encountered; check if last one was the new mode
+            if current_count > mode_count:
+                mode_value = current_value
+                mode_count = current_count
+
+            # Reset tracking for new value
+            current_value = val
+            current_count = 1
+
+    # Final check after loop ends
+    if current_count > mode_count:
+        mode_value = current_value
+        mode_count = current_count
+
+    return mode_value, mode_count
 
 
 # ------------------- PROBLEM 8 - REMOVE_DUPLICATES -------------------------
@@ -85,19 +214,83 @@ def find_mode(arr: StaticArray) -> tuple[object, int]:
 
 def remove_duplicates(arr: StaticArray) -> StaticArray:
     """
-    TODO: Write this implementation
+    Returns a new StaticArray with all duplicates removed.
+    Assumes the input array is sorted.
     """
-    pass
+    if arr.length() == 0:
+        return StaticArray(0)
+
+        # First pass: count how many unique elements are present
+    unique_count = 1
+    for i in range(1, arr.length()):
+        if arr.get(i) != arr.get(i - 1):
+            unique_count += 1
+
+    # Create a new StaticArray of the correct size
+    result = StaticArray(unique_count)
+
+    # Set the first unique value
+    result.set(0, arr.get(0))
+
+    # Track the index for inserting into the new array
+    index = 1
+
+    # Second pass: copy unique elements to result array
+    for i in range(1, arr.length()):
+        if arr.get(i) != arr.get(i - 1):
+            result.set(index, arr.get(i))
+            index += 1
+
+    return result
 
 
 # ------------------- PROBLEM 9 - COUNT_SORT --------------------------------
 
-
 def count_sort(arr: StaticArray) -> StaticArray:
     """
-    TODO: Write this implementation
+    Sorts a StaticArray of integers using counting sort in descending order.
+    Returns a new StaticArray with the sorted values.
     """
-    pass
+    if arr.length() == 0:
+        return StaticArray(0)
+
+    min_val = arr.get(0)
+    max_val = arr.get(0)
+
+    # Find the minimum and maximum value in the array
+    for i in range(1, arr.length()):
+        val = arr.get(i)
+        if val < min_val:
+            min_val = val
+        elif val > max_val:
+            max_val = val
+
+    range_size = max_val - min_val + 1
+    count_arr = StaticArray(range_size)
+
+    # Initialize all counts to 0
+    for i in range(range_size):
+        count_arr.set(i, 0)
+
+    # Count occurrences of each number
+    for i in range(arr.length()):
+        val = arr.get(i)
+        index = val - min_val
+        count_arr.set(index, count_arr.get(index) + 1)
+
+    result = StaticArray(arr.length())
+    result_index = 0
+
+    # Fill the result array in descending order
+    for i in range(range_size - 1, -1, -1):
+        value = i + min_val
+        count = count_arr.get(i)
+
+        for _ in range(count):
+            result.set(result_index, value)
+            result_index += 1
+
+    return result
 
 
 # ------------------- PROBLEM 10 - SORTED SQUARES ---------------------------
@@ -105,9 +298,31 @@ def count_sort(arr: StaticArray) -> StaticArray:
 
 def sorted_squares(arr: StaticArray) -> StaticArray:
     """
-    TODO: Write this implementation
+    Returns a new StaticArray containing the squares of each value
+    in sorted order. Assumes input array is sorted.
     """
-    pass
+    length = arr.length()
+    result = StaticArray(length)
+
+    left = 0
+    right = length - 1
+    index = length - 1
+
+    # Traverse from both ends, placing the largest squares at the end
+    while left <= right:
+        left_val = arr.get(left)
+        right_val = arr.get(right)
+
+        if abs(right_val) >= abs(left_val):
+            result.set(index, right_val * right_val)
+            right -= 1
+        else:
+            result.set(index, left_val * left_val)
+            left += 1
+
+        index -= 1
+
+    return result
 
 
 # ------------------- BASIC TESTING -----------------------------------------
