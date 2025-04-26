@@ -1,10 +1,11 @@
-# Name:
-# OSU Email:
+# Name: Daniel D. Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
-
+# Assignment: 2 Dynamic Array and ADT Implementation
+# Due Date: 04.28.2025
+# Description: This assignment is composed of 2 parts. In the first part, you will complete an implementation of a Dynamic Array.
+# Then in the second part, you will implement a Bag ADT with your Dynamic Array from Part 1.
+from typing import Any
 
 from static_array import StaticArray
 
@@ -132,68 +133,197 @@ class DynamicArray:
     # -----------------------------------------------------------------------
 
     def resize(self, new_capacity: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Our new_capacity must be a positive integer and cannot be smaller than the number of elements stored
+        if new_capacity <= 0 or new_capacity < self._size:
+            return
+
+        # Replace old fixed-capacity array with a new one of the correct size
+        new_data = StaticArray(new_capacity)
+
+        # Copy over the existing elements
+        for i in range(self._size):
+            new_data[i] = self._data[i]
+
+        # Update the internal storage
+        self._data = new_data
+        self._capacity = new_capacity
 
     def append(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        # Check if resize is needed
+        if self._size == self._capacity:
+            self.resize(self._capacity * 2)
+
+        # Insert new value at the end
+        self._data[self._size] = value
+
+        # Update size
+        self._size += 1
 
     def insert_at_index(self, index: int, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Validate our index
+        if index < 0 or index > self._size:
+            raise DynamicArrayException()
+
+        # Resize if we need to
+        if self._size == self._capacity:
+            self.resize(self._capacity *2)
+
+        # Shift our elements to the right
+        for i in range(self._size, index, -1):
+            self._data [i] = self ._data[i]
+
+        # Insert our new value
+        self._data[index] = value
+
+        # Update size
+        self._size += 1
 
     def remove_at_index(self, index: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Validate index
+        if index < 0 or index > self._size:
+            raise DynamicArrayException()
+
+        # Shift elements to the left
+        for i in range(index, self._size - 1):
+            self._data[i] = self._data[i + 1]
+
+        # Clean code, best practice
+        self._data[self._size - 1] = None
+
+        # Update size
+        self._size -= 1
+
+
 
     def slice(self, start_index: int, size: int) -> "DynamicArray":
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Validate our inputs
+        if start_index < 0 or size < 0 or start_index + size > self._size:
+            raise DynamicArrayException()
+
+        # Create the new Dynamic Array
+        new_array = DynamicArray()
+
+        # Copy the elements
+        for i in range(start_index, start_index + size):
+            new_array.append(self._data[i])
+
+        # Step 4: Return the new DynamicArray
+        return new_array
 
     def map(self, map_func) -> "DynamicArray":
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # So we can create a new DynamicArray
+        new_array = DynamicArray()
+
+        # Then apply map_func to each element
+        for i in range(self._size):
+            new_array.append(map_func(self._data[i]))
+
+        # Now return the new array
+        return new_array
 
     def filter(self, filter_func) -> "DynamicArray":
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Make a new DynamicArray
+        new_array = DynamicArray()
+
+        # Then we will apply filter_func to each element
+        for i in range(self._size):
+            if filter_func(self._data[i]):
+                new_array.append(self._data[i])
+
+        # Return the new array
+        return new_array
 
     def reduce(self, reduce_func, initializer=None) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+       # How we will handle the empty array
+        if self._size == 0:
+            return initializer
+
+        # Determine our starting point
+        if initializer is None:
+            accumulator = self._data[0]
+            start_index = 1
+        else:
+            accumulator = initializer
+            start_index = 0
+
+        # Looping through the rest
+        for i in range(self._size):
+            accumulator = reduce_func(accumulator, self._data[i])
+
+        # Return our final result
+        return accumulator
 
 
 def chunk(arr: DynamicArray) -> "DynamicArray":
-    """
-    TODO: Write this implementation
-    """
-    pass
+    if arr.length() == 0:
+        return DynamicArray()
 
+    # Create outer container
+    outer_array = DynamicArray()
 
-def find_mode(arr: DynamicArray) -> tuple[DynamicArray, int]:
-    """
-    TODO: Write this implementation
-    """
-    pass
+    # Initialize first chunk
+    current_chunk = DynamicArray()
+    current_chunk.append(arr[0])
 
+    # Traverse through the rest
+    for i in range(1, arr.length()):
+        if arr[i] >= arr[i - 1]:
+            # Progress through current chunk
+            current_chunk.append(arr[i])
+        else:
+            # Save current chunk progress, start a new chunk
+            outer_array.append(current_chunk)
+            current_chunk = DynamicArray()
+            current_chunk.append(arr[i])
+    # Add the last chunk
+    outer_array.append(current_chunk)
 
+    return outer_array
+
+def find_mode(arr: DynamicArray) -> DynamicArray | tuple[DynamicArray, int | Any]:
+    # If our input array is empty, return an empty DynamicArray with a frequency of 0
+    if arr.length() == 0:
+        return DynamicArray()
+
+    # Container for mode/s
+    modes = DynamicArray()
+    # Track the current value
+    current_value = arr[0]
+    #Count the occurrences of the current value
+    current_count = 1
+    # Track the highest frequency seen so far
+    max_count = 1
+
+    # Traverse the array starting at the second element
+    for i in range(1,  arr.length()):
+        # If the value is the same as the last: increment count
+        current_count += 1
+    else:
+            # If the value has changed: evaluate the completed sequence
+        if current_count > max_count:
+            # Found a new mode with higher frequency
+            modes = DynamicArray()
+            modes.append(current_value)
+            max_count = current_count
+        elif current_count == max_count:
+            # Another mode with equal frequency is found
+            modes.append(current_value)
+
+        # Reset counters for the new value
+        current_value = arr[i]
+        current_count = 1
+
+    # Last check for the final sequence after the loop ends
+    if current_count > max_count:
+        modes = DynamicArray()
+        modes.append(current_value)
+        max_count = current_count
+    elif current_count == max_count:
+        modes.append(current_value)
+
+    # Return a tuple
+    return modes, max_count
 # ------------------- BASIC TESTING -----------------------------------------
 
 

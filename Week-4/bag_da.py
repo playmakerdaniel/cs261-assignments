@@ -1,9 +1,10 @@
-# Name:
-# OSU Email:
+# Name: Daniel D. Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 2 Dynamic Array and ADT Implementation
+# Due Date: 04.28.2025
+# Description: This assignment is composed of 2 parts. In the first part, you will complete an implementation of a Dynamic Array.
+# # Then in the second part, you will implement a Bag ADT with your Dynamic Array from Part 1.
 
 
 from dynamic_array import *
