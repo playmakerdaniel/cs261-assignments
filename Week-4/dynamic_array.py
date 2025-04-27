@@ -161,54 +161,75 @@ class DynamicArray:
         self._size += 1
 
     def insert_at_index(self, index: int, value: object) -> None:
-        # Validate our index
-        if index < 0 or index > self._size:
-            raise DynamicArrayException()
-
-        # Resize if we need to
-        if self._size == self._capacity:
-            self.resize(self._capacity *2)
-
-        # Shift our elements to the right
-        for i in range(self._size, index, -1):
-            self._data [i] = self ._data[i]
-
-        # Insert our new value
-        self._data[index] = value
-
-        # Update size
-        self._size += 1
-
-    def remove_at_index(self, index: int) -> None:
         # Validate index
         if index < 0 or index > self._size:
             raise DynamicArrayException()
 
-        # Shift elements to the left
+        # Resize if array is full
+        if self._size == self._capacity:
+            self.resize(self._capacity * 2)
+
+        # Shift our elements to the right starting from the end
+        for i in range(self._size, index, -1):
+            self._data[i] = self._data[i - 1]
+
+        # Insert the new value at the correct index
+        self._data[index] = value
+
+        # Increase size
+        self._size += 1
+
+    def remove_at_index(self, index: int) -> None:
+        # Check if index is valid
+        if index < 0 or index >= self._size:
+            raise DynamicArrayException()
+
+        # Check for a case where capacity needs reduction
+        if self._size < (self._capacity // 4) and self._capacity > 10:
+            # The new capacity is twice the current number of elements
+            new_capacity = max(self._size * 2, 10)
+
+            # Create new array with reduced capacity
+            new_arr = StaticArray(new_capacity)
+
+            # Copy existing elements to new array
+            for i in range(self._size):
+                new_arr[i] = self._data[i]
+
+            # Update data and capacity
+            self._data = new_arr
+            self._capacity = new_capacity
+
+        # Shift elements
         for i in range(index, self._size - 1):
             self._data[i] = self._data[i + 1]
-
-        # Clean code, best practice
-        self._data[self._size - 1] = None
 
         # Update size
         self._size -= 1
 
+       # Check shrinking again after removal
+        if self._size < (self._capacity // 4) and self._capacity > 10:
+            new_capacity = max(self._size * 2, 10)
+            new_arr = StaticArray(new_capacity)
+            for i in range(self._size):
+                new_arr[i] = self._data[i]
 
+            self._data = new_arr
+            self._capacity = new_capacity
 
     def slice(self, start_index: int, size: int) -> "DynamicArray":
         # Validate our inputs
-        if start_index < 0 or size < 0 or start_index + size > self._size:
+        if start_index < 0 or start_index >= self._size or size < 0 or start_index + size > self._size:
             raise DynamicArrayException()
 
-        # Create the new Dynamic Array
+        # Create new DynamicArray
         new_array = DynamicArray()
 
         # Copy the elements
         for i in range(start_index, start_index + size):
             new_array.append(self._data[i])
 
-        # Step 4: Return the new DynamicArray
+        # Return the new array
         return new_array
 
     def map(self, map_func) -> "DynamicArray":
@@ -235,7 +256,7 @@ class DynamicArray:
         return new_array
 
     def reduce(self, reduce_func, initializer=None) -> object:
-       # How we will handle the empty array
+        # How we will handle the empty array
         if self._size == 0:
             return initializer
 
@@ -248,12 +269,11 @@ class DynamicArray:
             start_index = 0
 
         # Looping through the rest
-        for i in range(self._size):
+        for i in range(start_index, self._size):
             accumulator = reduce_func(accumulator, self._data[i])
 
         # Return our final result
         return accumulator
-
 
 def chunk(arr: DynamicArray) -> "DynamicArray":
     if arr.length() == 0:
@@ -282,39 +302,39 @@ def chunk(arr: DynamicArray) -> "DynamicArray":
     return outer_array
 
 def find_mode(arr: DynamicArray) -> DynamicArray | tuple[DynamicArray, int | Any]:
-    # If our input array is empty, return an empty DynamicArray with a frequency of 0
+    # Check if array is empty
     if arr.length() == 0:
-        return DynamicArray()
+        return DynamicArray(), 0
 
-    # Container for mode/s
+    # Create our DynamicArray to hold modes
     modes = DynamicArray()
-    # Track the current value
+
+    # Initialize tracking variables
     current_value = arr[0]
-    #Count the occurrences of the current value
     current_count = 1
-    # Track the highest frequency seen so far
     max_count = 1
 
-    # Traverse the array starting at the second element
-    for i in range(1,  arr.length()):
-        # If the value is the same as the last: increment count
-        current_count += 1
-    else:
-            # If the value has changed: evaluate the completed sequence
-        if current_count > max_count:
-            # Found a new mode with higher frequency
-            modes = DynamicArray()
-            modes.append(current_value)
-            max_count = current_count
-        elif current_count == max_count:
-            # Another mode with equal frequency is found
-            modes.append(current_value)
+    # Walk through array
+    for i in range(1, arr.length()):
+        if arr[i] == current_value:
+            # Same value as previous, increment count
+            current_count += 1
+        else:
+            # Value changed, evaluate the sequence
+            if current_count > max_count:
+                # Found new highest frequency
+                modes = DynamicArray()
+                modes.append(current_value)
+                max_count = current_count
+            elif current_count == max_count:
+                # Found another value with same max frequency
+                modes.append(current_value)
 
-        # Reset counters for the new value
-        current_value = arr[i]
-        current_count = 1
+            # Reset trackers for new value
+            current_value = arr[i]
+            current_count = 1
 
-    # Last check for the final sequence after the loop ends
+    # Final check after the loop
     if current_count > max_count:
         modes = DynamicArray()
         modes.append(current_value)
@@ -322,7 +342,7 @@ def find_mode(arr: DynamicArray) -> DynamicArray | tuple[DynamicArray, int | Any
     elif current_count == max_count:
         modes.append(current_value)
 
-    # Return a tuple
+    # Return our modes and the max frequency
     return modes, max_count
 # ------------------- BASIC TESTING -----------------------------------------
 
