@@ -180,42 +180,27 @@ class DynamicArray:
         self._size += 1
 
     def remove_at_index(self, index: int) -> None:
-        # Check if index is valid
+        # Check if the index is valid
         if index < 0 or index >= self._size:
             raise DynamicArrayException()
 
-        # Check for a case where capacity needs reduction
-        if self._size < (self._capacity // 4) and self._capacity > 10:
-            # The new capacity is twice the current number of elements
-            new_capacity = max(self._size * 2, 10)
-
-            # Create new array with reduced capacity
+        # Check if we need to shrink the array BEFORE removing
+        if self._size < (self._capacity / 4) and self._capacity > 10:
+            new_capacity = self._size * 2
+            if new_capacity < 10:
+                new_capacity = 10  # Enforce minimum capacity 10
             new_arr = StaticArray(new_capacity)
-
-            # Copy existing elements to new array
             for i in range(self._size):
                 new_arr[i] = self._data[i]
-
-            # Update data and capacity
             self._data = new_arr
             self._capacity = new_capacity
 
-        # Shift elements
+        # Shift elements left to fill the gap
         for i in range(index, self._size - 1):
             self._data[i] = self._data[i + 1]
 
-        # Update size
+        # Decrease size after removal
         self._size -= 1
-
-       # Check shrinking again after removal
-        if self._size < (self._capacity // 4) and self._capacity > 10:
-            new_capacity = max(self._size * 2, 10)
-            new_arr = StaticArray(new_capacity)
-            for i in range(self._size):
-                new_arr[i] = self._data[i]
-
-            self._data = new_arr
-            self._capacity = new_capacity
 
     def slice(self, start_index: int, size: int) -> "DynamicArray":
         # Validate our inputs
