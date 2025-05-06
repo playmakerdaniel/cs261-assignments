@@ -1,9 +1,10 @@
-# Name:
-# OSU Email:
+# Name: Daniel Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 3 Linked List and ADT Implementation
+# Due Date: 05/05/2025
+# Description: This assignment comprises of 5 parts. In the first part, you will complete the implementation of a Singly Linked List data structure.
+# In part 2, you will implement the Stack ADT using your Dynamic Array from Assignment 2. For part 3, you will implement the Queue ADT using your Static Array from Assignment 1. For parts 4 and 5, you will again implement the Stack and Queue ADTs, but by using the Singly Linked Nodes
 
 
 from SLNode import *
@@ -68,52 +69,118 @@ class LinkedList:
     # ------------------------------------------------------------------ #
 
     def insert_front(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Create a new node that holds the value
+        new_node = SLNode(value)
+
+        # Link the new node to what was previously the first node
+        new_node.next = self._head.next
+
+        # Make the sentinel node point to the new node — it's now the first real element
+        self._head.next = new_node
 
     def insert_back(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Start from the sentinel node
+        current = self._head
+
+        # Walk through the list until we find the end
+        while current.next:
+            current = current.next
+
+        # Create a new node and link it as the last element
+        current.next = SLNode(value)
 
     def insert_at_index(self, index: int, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Make sure the index is in a valid range
+        if index < 0 or index > self.length():
+            raise SLLException()
+
+        # Start from the sentinel node
+        current = self._head
+
+        # Move to the node just before the target position
+        for _ in range(index):
+            current = current.next
+
+        # Link in the new node
+        new_node = SLNode(value)
+        new_node.next = current.next
+        current.next = new_node
 
     def remove_at_index(self, index: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Make sure the index is in range
+        if index < 0 or index >= self.length():
+            raise SLLException()
+
+        # Start at the sentinel
+        current = self._head
+
+        # Move to the node just before the one we want to remove
+        for _ in range(index):
+            current = current.next
+
+        # Skip over the node we're removing
+        current.next = current.next.next
 
     def remove(self, value: object) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Start at the sentinel node
+        current = self._head
+
+        # Walk the list while we have a next node to inspect
+        while current.next:
+            if current.next.value == value:
+                # Found a match, remove it by skipping over it
+                current.next = current.next.next
+                return True
+            current = current.next
+
+        # Value not found
+        return False
 
     def count(self, value: object) -> int:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Start at the first real node
+        current = self._head.next
+        count = 0
+
+        # Walk through the list, counting matches
+        while current:
+            if current.value == value:
+                count += 1
+            current = current.next
+
+        return count
 
     def find(self, value: object) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Start at the first actual node
+        current = self._head.next
+
+        # Look for a match
+        while current:
+            if current.value == value:
+                return True
+            current = current.next
+
+        # Value not found in the list
+        return False
 
     def slice(self, start_index: int, size: int) -> "LinkedList":
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Check for invalid input
+        if start_index < 0 or size < 0 or start_index + size > self.length():
+            raise SLLException()
+
+        # Start from the first real node
+        current = self._head.next
+
+        # Move to the node at start_index
+        for _ in range(start_index):
+            current = current.next
+
+        # Build a new list and copy over 'size' elements
+        new_list = LinkedList()
+        for _ in range(size):
+            new_list.insert_back(current.value)
+            current = current.next
+
+        return new_list
 
 
 # ------------------- BASIC TESTING -----------------------------------------
