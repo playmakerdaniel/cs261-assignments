@@ -1,9 +1,10 @@
-# Name:
-# OSU Email:
+# Name: Daniel Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 3 Linked List and ADT Implementation
+# Due Date: 05/05/2025
+# Description: This assignment comprises of 5 parts. In the first part, you will complete the implementation of a Singly Linked List data structure.
+# In part 2, you will implement the Stack ADT using your Dynamic Array from Assignment 2. For part 3, you will implement the Queue ADT using your Static Array from Assignment 1. For parts 4 and 5, you will again implement the Stack and Queue ADTs, but by using the Singly Linked Nodes
 
 
 from SLNode import SLNode
@@ -63,22 +64,34 @@ class Queue:
     # -----------------------------------------------------------------------
 
     def enqueue(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        new_node = SLNode(value)
+
+        # If queue is empty, head and tail both point to the new node
+        if self.is_empty():
+            self._head = new_node
+            self._tail = new_node
+        else:
+            # Attach to the tail and move the tail pointer
+            self._tail.next = new_node
+            self._tail = new_node
 
     def dequeue(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if self.is_empty():
+            raise QueueException()
+
+        value = self._head.value
+        self._head = self._head.next
+
+        # If queue is now empty, reset tail to None
+        if self._head is None:
+            self._tail = None
+
+        return value
 
     def front(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if self.is_empty():
+            raise QueueException()
+        return self._head.value
 
 
 # ------------------- BASIC TESTING -----------------------------------------
