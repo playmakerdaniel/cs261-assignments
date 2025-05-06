@@ -1,9 +1,10 @@
-# Name:
-# OSU Email:
+# Name: Daniel Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 3 Linked List and ADT Implementation
+# Due Date: 05/05/2025
+# Description: This assignment comprises of 5 parts. In the first part, you will complete the implementation of a Singly Linked List data structure.
+# In part 2, you will implement the Stack ADT using your Dynamic Array from Assignment 2. For part 3, you will implement the Queue ADT using your Static Array from Assignment 1. For parts 4 and 5, you will again implement the Stack and Queue ADTs, but by using the Singly Linked Nodes
 
 
 from SLNode import SLNode
@@ -62,22 +63,26 @@ class Stack:
     # -----------------------------------------------------------------------
 
     def push(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # Create a new node pointing to the current top
+        new_node = SLNode(value)
+        new_node.next = self._head
+
+        # Update head to point to the new top node
+        self._head = new_node
 
     def pop(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if self.is_empty():
+            raise StackException()
+
+            # Grab the top value and move head to the next node
+        value = self._head.value
+        self._head = self._head.next
+        return value
 
     def top(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if self.is_empty():
+            raise StackException()
+        return self._head.value
 
 
 # ------------------- BASIC TESTING -----------------------------------------
