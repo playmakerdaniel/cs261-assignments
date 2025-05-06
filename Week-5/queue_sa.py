@@ -1,9 +1,10 @@
-# Name:
-# OSU Email:
+# Name: Daniel Burrows
+# OSU Email: burrdani@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 3 Linked List and ADT Implementation
+# Due Date: 05/05/2025
+# Description: This assignment comprises of 5 parts. In the first part, you will complete the implementation of a Singly Linked List data structure.
+# In part 2, you will implement the Stack ADT using your Dynamic Array from Assignment 2. For part 3, you will implement the Queue ADT using your Static Array from Assignment 1. For parts 4 and 5, you will again implement the Stack and Queue ADTs, but by using the Singly Linked Nodes
 
 
 # Note: Changing any part of the pre-implemented methods (besides adding  #
@@ -88,31 +89,46 @@ class Queue:
     # ---------------------------------------------------------------------- #
 
     def enqueue(self, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        # If full, expand the array
+        if self._current_size == self._sa.length():
+            self._double_queue()
+
+        # Calculate new back index
+        self._back = self._increment(self._back)
+        self._sa[self._back] = value
+        self._current_size += 1
 
     def dequeue(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if self.is_empty():
+            raise QueueException()
+
+        value = self._sa[self._front]
+        self._front = self._increment(self._front)
+        self._current_size -= 1
+        return value
 
     def front(self) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        value = self._sa[self._front]
+        self._front = self._increment(self._front)
+        self._current_size -= 1
+        return value
 
     # The method below is optional, but recommended, to implement. #
     # You may alter it in any way you see fit.                     #
 
     def _double_queue(self) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        new_capacity = self._sa.length() * 2
+        new_sa = StaticArray(new_capacity)
+
+        # Copy elements in correct order
+        index = self._front
+        for i in range(self._current_size):
+            new_sa[i] = self._sa[index]
+            index = self._increment(index)
+
+        self._sa = new_sa
+        self._front = 0
+        self._back = self._current_size - 1
 
 
 # ------------------- BASIC TESTING -----------------------------------------
